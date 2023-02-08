@@ -2,18 +2,19 @@ const client = require("./client");
 const bcrypt = require("bcrypt");
 const SALT_COUNT = 10;
 
-// database functions
-
-// user functions
 async function createUser({ username, password }) { 
+  try {
     const hashedPassword = await bcrypt.hash(password, SALT_COUNT);
     const { rows: [user] } = await client.query(`
       INSERT INTO users (username, password)
       VALUES ($1, $2)
-      RETURNING username;
+      RETURNING id, username;
     `, [username, hashedPassword]);
   
     return user;
+  } catch (error) {
+    throw new Error('Error creating user');
+  }
 }
 
 async function getUser({ username, password }) {
@@ -21,42 +22,55 @@ async function getUser({ username, password }) {
     const currentUser = await getUserByUsername(username);
     if (currentUser) {
       const hashedPassword = currentUser.password;
-      const { rows: [user] } = await client.query(`
-      SELECT *
-      FROM users
-      WHERE username=$1;
-    `, [username, hashedPassword]);
-       let passwordsMatch = await bcrypt.compare(password, hashedPassword);
-
+      const passwordsMatch = await bcrypt.compare(password, hashedPassword);
       if (passwordsMatch) {
-        delete user.password;
-        return user;
+        delete currentUser.password;
+        return currentUser;
       } else {
-        throw error;
+        return false;
       }
-    }
+    } else {
+      return false;
+    }   
   } catch (error) {
-    console.log(error);
+    throw new Error('Error getting user');
   }
 }
 
 async function getUserById(userId) {
   try {
     const { rows: [user] } = await client.query(`
-      SELECT id username
+      SELECT id, username
       FROM users
       WHERE id = $1;
     `, [userId]);
-  
+
+    if (!user) {
+      return null;
+    }
+
     return user;
   } catch (error) {
-    console.error(error);
-    throw new Error('Error getting user by id');
+    throw new Error('Error getting user by Id');
   }
 }
 
 async function getUserByUsername(userName) {
+  try {
+    const { rows: [user] } = await client.query(`
+      SELECT id, username, password
+      FROM users
+      WHERE username=$1
+    `,[userName]);
 
+    if (!user) {
+      return null;
+    }
+
+    return user;
+  } catch (error) {
+    throw new Error('Error getting user by username');
+  }
 }
 
 module.exports = {
