@@ -1,19 +1,5 @@
 const client = require('./client');
 
-async function createActivity({ name, description }) {
-  try {
-    const { rows: [activities] } = await client.query(`
-      INSERT INTO activities (name, description)
-      VALUES ($1, $2)
-      RETURNING *;
-    `, [name, description])
-
-    return activities;
-  } catch (error) {
-    throw new Error('Error creating activity');
-  }
-}
-
 async function getAllActivities() {
   try {
     const { rows } = await client.query(`
@@ -87,6 +73,20 @@ async function attachActivitiesToRoutines(routines) {
   }
   }
 
+
+async function createActivity({ name, description }) {
+  try {
+    const { rows: [activities] } = await client.query(`
+      INSERT INTO activities (name, description)
+      VALUES ($1, $2)
+      RETURNING *;
+    `, [name, description])
+
+    return activities;
+  } catch (error) {
+    throw new Error('Error creating activity');
+  }
+}
 
   async function updateActivity({id, ...fields }) {
     const setString = Object.keys(fields).map(

@@ -1,27 +1,42 @@
 const client = require("./client");
 
+//async function getRoutineActivityById(id) {}
+
+
 async function addActivityToRoutine({
   routineId,
   activityId,
   count,
   duration,
-}) {}
+}) {
+  try {
+   const { rows: [routine_activity] } = await client.query(`
+     INSERT INTO routine_activities ("routineId", "activityId", count, duration)
+     VALUES ($1, $2, $3, $4)
+     RETURNING *;
+   `, [routineId, activityId, count, duration ])
 
-async function getRoutineActivityById(id) {}
+   return routine_activity
+  } catch (error) {
+ throw new Error('Error adding activity to routine')
+ }
+}
 
-async function getRoutineActivitiesByRoutine({ id }) {}
 
-async function updateRoutineActivity({ id, ...fields }) {}
 
-async function destroyRoutineActivity(id) {}
+// async function getRoutineActivitiesByRoutine({ id }) {}
 
-async function canEditRoutineActivity(routineActivityId, userId) {}
+// async function updateRoutineActivity({ id, ...fields }) {}
+
+// async function destroyRoutineActivity(id) {}
+
+// async function canEditRoutineActivity(routineActivityId, userId) {}
 
 module.exports = {
-  getRoutineActivityById,
+  //getRoutineActivityById,
   addActivityToRoutine,
-  getRoutineActivitiesByRoutine,
-  updateRoutineActivity,
-  destroyRoutineActivity,
-  canEditRoutineActivity,
+  // getRoutineActivitiesByRoutine,
+  // updateRoutineActivity,
+  // destroyRoutineActivity,
+  // canEditRoutineActivity,
 };
