@@ -7,6 +7,8 @@ const {
   getAllActivities,
   addActivityToRoutine
 } = require('./');
+
+
 const client = require("./client")
 
 async function dropTables() {

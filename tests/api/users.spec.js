@@ -37,7 +37,7 @@ const {
 
 describe("/api/users", () => {
   describe("POST /api/users/register", () => {
-    xit("Creates a new user.", async () => {
+    it("Creates a new user.", async () => {
       // Create some fake user data
       const fakeUserData = {
         username: faker.internet.userName(),
@@ -60,7 +60,7 @@ describe("/api/users", () => {
       });
     });
 
-    xit("EXTRA CREDIT: Hashes password before saving user to DB.", async () => {
+    it("EXTRA CREDIT: Hashes password before saving user to DB.", async () => {
       // Create some fake user data
       const fakeUserData = {
         username: faker.internet.userName(),
